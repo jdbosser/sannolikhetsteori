@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+
+    <body>
+        <h1>Stora talens lag i en normalfördelning</h1>
+        <h2>De stokastiska variablerna räknas ut genom att invertera täthetsfunktionen. </h2>
+        <h3>Någon primitiv funktion (fördelningsfunktion) existerar inte för normalfördelningskurvan. Istället räknar vi ut integralen tills vi når värdet av det rektangelfördelade slumptalet och returnerar integralens värde. Detta är utfallet, alltså värdet på stokastiska variabeln, enligt inversmetoden.</h3>
+        
+        <h3>Skriptet räknar ut allt numeriskt förutom ett rektangelfördelat slumptal mellan 0 och 1, som används i inversmetoden.</h3>
+        <p>Vilken standardavvikelse önskas? <input type="number" value="1" id="avvikelse"></input></p>
+        <p>Vilket väntevärde önskas? <input type="number" value="0" id="vantevarde"></input></p>
+        <input type="button" value="start()" onclick="start()"></input>
+        <input type="button" value="stop()" onclick="stop()"></input>
+
+        <p>Centrala gränsvärdessatsen ger: <span id="steps"></span></p>
+        <p>Efter <span id="loops">0</span> loops</p>
+        <script type="text/javascript">
+            var out = document.getElementById("steps");
+            var loopsOut = document.getElementById("loops");
+            var isRunning = false;
+            var worker;
+            function start(){
+                if(isRunning){worker.terminate();}
+                
+                worker = new Worker('algorithm.js');
+                worker.addEventListener("message", function(e){
+                    var data = e.data;
+                    out.innerHTML = data.genom;
+                    loopsOut.innerHTML = data.ggr;
+                }, false);
+                isRunning = true;
+                worker.postMessage({"sigma": document.getElementById("avvikelse").value, "my": document.getElementById("vantevarde").value});
+            }
+            function stop(){
+                worker.terminate();
+                isRunning = false;
+            }
+            
+        </script>
+        <p><b>Författare: Jonas Sjöman Jarnhäll och John Daniel Bossér</b></p>
+        <p>Källkoden finns på <a href="http://github.com">github.</a></p>
+    </body>
+</html>
