@@ -4,7 +4,10 @@ var out = document.getElementById("steps"),
     worker;
 
 document.getElementById("start").addEventListener("click",function(){
-        if(isRunning){worker.terminate();}
+    if(isRunning){worker.terminate();}
+    
+    var deviation = +document.getElementById("avvikelse").value,
+        expectedVal = +document.getElementById("vantevarde").value;
 
     worker = new Worker('algorithm.js');
     worker.addEventListener("message", function(e){
@@ -13,7 +16,7 @@ document.getElementById("start").addEventListener("click",function(){
         loopsOut.innerHTML = data.ggr;
     }, false);
     isRunning = true;
-    worker.postMessage({"sigma": document.getElementById("avvikelse").value, "my": document.getElementById("vantevarde").value});
+    worker.postMessage({sigma: deviation, my: expectedVal});
 });
 
 document.getElementById("stop").addEventListener("click",function(){
