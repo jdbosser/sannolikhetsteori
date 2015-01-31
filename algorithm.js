@@ -31,6 +31,6 @@ self.addEventListener("message", function(e){
     for(var i = 0; true; i++){
         var stok = generateStokVarFranTathetsFunc(normalfordelning, Math.random(), my-sigma*10, my+sigma*10, 2*sigma*10/1000000);
         stokSum = stokSum + stok;
-        postMessage({genom: stokSum/i, ggr: i});
+        postMessage({genom: stokSum/i, ggr: i, stok: stok});
     }
 }, false);
