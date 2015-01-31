@@ -15,6 +15,13 @@
         <input type="button" value="stop()" id="stop"></input>
 
         <p>Område som klumpas ihop på grafen: <input type="number" id="chartPrecision" value="0.10"></p>
+        <p>Ritningstyp:
+            <select id="y-axel">
+                <option value="quantity">antal</option>
+                <option value="relative" selected>förändringsfaktor</option>
+            </select>
+            <input type="checkbox" name="kumulativ" id="kumulativ"><label for="kumulativ">kumulativ</label>
+        </p>
 
         <p>De stora talens lag ger: <span id="steps"></span></p>
         <p>Efter <span id="loops">0</span> loops</p>
