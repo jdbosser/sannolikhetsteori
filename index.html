@@ -16,6 +16,7 @@
 
         <p>De stora talens lag ger: <span id="steps"></span></p>
         <p>Efter <span id="loops">0</span> loops</p>
+        <script type="text/javascript" src="algorithm.js"></script>
         <script type="text/javascript">
             var out = document.getElementById("steps");
             var loopsOut = document.getElementById("loops");
@@ -31,7 +32,7 @@
                     loopsOut.innerHTML = data.ggr;
                 }, false);
                 isRunning = true;
-                worker.postMessage({"sigma": document.getElementById("avvikelse").value, "my": document.getElementById("vantevarde").value});
+                worker.postMessage({type:type.LAW_OF_LARGE_NUMBERS, "sigma": document.getElementById("avvikelse").value, "my": document.getElementById("vantevarde").value});
             }
             function stop(){
                 worker.terminate();
