@@ -27,7 +27,7 @@ var normalfordelning = function(x){
     return  ((1/(sigma*Math.sqrt(2*Math.PI)))*(Math.pow(Math.E, -((Math.pow((x-my), 2)/(2*(Math.pow(sigma, 2))))))));
     };
 self.addEventListener("message", function(e){
-    if(e.type=type.LAW_OF_LARGE_NUMBERS){
+    if(e.data.type===type.LAW_OF_LARGE_NUMBERS){
         var data = e.data;
         my = data.my;
         sigma = data.sigma;
@@ -38,6 +38,13 @@ self.addEventListener("message", function(e){
             stokSum = stokSum + stok;
             postMessage({genom: stokSum/i, ggr: i});
         }
+    }
+    else if(e.data.type===type.GET_STOK_VAR){
+        var data = e.data;
+        /*my = data.my;
+        sigma = data.sigma;*/
+        var stok = generateStokVarFranTathetsFunc(normalfordelning, Math.random, my-sigma*10, my+sigma*10, 2*sigma*10/1000000);
+        postMessage({value: stok});
     }
     
 }, false);

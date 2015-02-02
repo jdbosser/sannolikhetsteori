@@ -12,12 +12,15 @@
         <p>Vilken standardavvikelse önskas? <input type="number" value="1" id="avvikelse"></input></p>
         <p>Vilket väntevärde önskas? <input type="number" value="0" id="vantevarde"></input></p>
         <input type="button" value="start()" onclick="start()"></input>
+        <input type="button" value="startWithShowcase()" onclick="startWithShowcase()"></input>
         <input type="button" value="stop()" onclick="stop()"></input>
 
         <p>De stora talens lag ger: <span id="steps"></span></p>
         <p>Efter <span id="loops">0</span> loops</p>
         <script type="text/javascript" src="algorithm.js"></script>
+        <script type="text/javascript" src="showcase.js"></script>
         <script type="text/javascript">
+            
             var out = document.getElementById("steps");
             var loopsOut = document.getElementById("loops");
             var isRunning = false;
@@ -33,6 +36,24 @@
                 }, false);
                 isRunning = true;
                 worker.postMessage({type:type.LAW_OF_LARGE_NUMBERS, "sigma": document.getElementById("avvikelse").value, "my": document.getElementById("vantevarde").value});
+            }
+            function startWithShowcase(){
+                if(isRunning){worker.terminate();}
+                
+                
+                var canvas = document.createElement("canvas");
+                var showcaser = new ShowCase();
+                
+                document.getElementsByTagName("body")[0].appendChild(canvas);
+                
+                worker = new Worker("algorithm.js");
+                worker.addEventListener("message", function(e){
+                    var data = e.data;
+                    alert(e.data.value);
+                });
+                isRunning = true;
+                worker.postMessage({type:type.GET_STOK_VAR, sigma:document.getElementById("avvikelse").value, my:document.getElementById("vantevarde").value});
+                
             }
             function stop(){
                 worker.terminate();
