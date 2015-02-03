@@ -37,22 +37,30 @@
                 isRunning = true;
                 worker.postMessage({type:type.LAW_OF_LARGE_NUMBERS, "sigma": document.getElementById("avvikelse").value, "my": document.getElementById("vantevarde").value});
             }
+            var input = [];
             function startWithShowcase(){
                 if(isRunning){worker.terminate();}
                 
+                var sigma = document.getElementById("avvikelse").value;
+                var my = document.getElementById("vantevarde").value;
                 
                 var canvas = document.createElement("canvas");
-                var showcaser = new ShowCase();
+                var showcaser = new ShowCase(my-10*sigma, my+10*sigma, my, canvas.getContext("2d"));
                 
                 document.getElementsByTagName("body")[0].appendChild(canvas);
+                
+                
                 
                 worker = new Worker("algorithm.js");
                 worker.addEventListener("message", function(e){
                     var data = e.data;
-                    alert(e.data.value);
+                    alert(data.value);
+                    input.push(data.value);
+                    var values = input.slice();
+                    calculatedValues = showcaser.graph(values);
                 });
                 isRunning = true;
-                worker.postMessage({type:type.GET_STOK_VAR, sigma:document.getElementById("avvikelse").value, my:document.getElementById("vantevarde").value});
+                worker.postMessage({type:type.GET_STOK_VAR, sigma:sigma, my:my});
                 
             }
             function stop(){
