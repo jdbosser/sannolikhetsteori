@@ -43,8 +43,10 @@ self.addEventListener("message", function(e){
         var data = e.data;
         my = data.my;
         sigma = data.sigma;
-        var stok = generateStokVarFranTathetsFunc(normalfordelning, Math.random(), my-sigma*10, my+sigma*10, 2*sigma*10/1000000);
-        postMessage({value: stok});
+        for(;true;){
+            var stok = generateStokVarFranTathetsFunc(normalfordelning, Math.random(), my-sigma*10, my+sigma*10, 2*sigma*10/1000000);
+            postMessage({value: stok});
+        }   
     }
     
 }, false);

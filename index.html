@@ -17,6 +17,17 @@
 
         <p>De stora talens lag ger: <span id="steps"></span></p>
         <p>Efter <span id="loops">0</span> loops</p>
+        
+        <h2>Senaste tillägget, nu kan du rita grafer!</h2>
+        <form>
+            Realtidsgraf:<input type="radio" name="graph" id="realtime_radio_box" checked><br>
+            Rita efter ett visst antal värden<input type="radio" name="graph" id="not_realtime_radio_box"><input type="number" id="not_realtime_stop_value">
+            
+            Fixerad bredd på staplarna (1px per stapel):<input type="radio" name="bar_width" id="fixed_width_graph_radio_box" checked><br> 
+            Minskande bredd <input type="radio" name="bar_width" id="decreasing_width_graph_radio_box"><br>
+        </form>
+        <input type="button" value="startWithShowcase()" onclick="startWithShowcase()"></input>
+        
         <script type="text/javascript" src="algorithm.js"></script>
         <script type="text/javascript" src="showcase.js"></script>
         <script type="text/javascript">
@@ -41,30 +52,61 @@
             function startWithShowcase(){
                 if(isRunning){worker.terminate();}
                 
-                var sigma = document.getElementById("avvikelse").value;
-                var my = document.getElementById("vantevarde").value;
+                var sigma = parseFloat(document.getElementById("avvikelse").value);
+                var my = parseFloat(document.getElementById("vantevarde").value);
                 
                 var canvas = document.createElement("canvas");
+                canvas.setAttribute("width", window.outerWidth);
+                canvas.setAttribute("height", window.outerHeight);
+                
+                
+                var finished = parseInt(document.getElementById("not_realtime_stop_value").value);
+                var realtime = document.getElementById("realtime_radio_box").checked;
+                var fixedBarWidth = document.getElementById("realtime_radio_box").checked
+                
+                var progress = document.createElement("progress");
+                progress.setAttribute("value", 0);
+                progress.setAttribute("max", finished);
+                
+                
                 var showcaser = new ShowCase(my-10*sigma, my+10*sigma, my, canvas.getContext("2d"));
                 
-                document.getElementsByTagName("body")[0].appendChild(canvas);
                 
                 
+                var graphFunction;
+                if(document.getElementById("fixed_width_graph_radio_box").checked) graphFunction = showcaser.graphWithPixelWidth;
+                else graphFunction = showcaser.graphWithDecreasingBarWitdh;
                 
                 worker = new Worker("algorithm.js");
                 worker.addEventListener("message", function(e){
                     var data = e.data;
-                    alert(data.value);
+                    //alert(data.value);
                     input.push(data.value);
                     var values = input.slice();
-                    calculatedValues = showcaser.graph(values);
+                    var length = (my+10*sigma - (my-10*sigma))/values.length;
+                    loopsOut.innerHTML = values.length /*+ " och stapellängden är: " + length*/;
+                    
+                    if(realtime) graphFunction(values);
+                    
+                    progress.setAttribute("value", values.length);
+                    if(values.length >= finished && finished > 0 && !realtime) {
+                        //alert(finished)
+                        graphFunction(values);
+                        stop();
+                    }
+                    
                 });
                 isRunning = true;
-                worker.postMessage({type:type.GET_STOK_VAR, sigma:sigma, my:my});
+                if(finished > 0 || realtime){
+                    worker.postMessage({type:type.GET_STOK_VAR, sigma:sigma, my:my})
+                    document.getElementsByTagName("body")[0].appendChild(canvas);
+                    if(!realtime)document.getElementsByTagName("body")[0].appendChild(progress);
+                };
                 
             }
             function stop(){
                 worker.terminate();
+                input = [];
                 isRunning = false;
             }
             
