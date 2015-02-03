@@ -41,9 +41,9 @@ self.addEventListener("message", function(e){
     }
     else if(e.data.type===type.GET_STOK_VAR){
         var data = e.data;
-        /*my = data.my;
-        sigma = data.sigma;*/
-        var stok = generateStokVarFranTathetsFunc(normalfordelning, Math.random, my-sigma*10, my+sigma*10, 2*sigma*10/1000000);
+        my = data.my;
+        sigma = data.sigma;
+        var stok = generateStokVarFranTathetsFunc(normalfordelning, Math.random(), my-sigma*10, my+sigma*10, 2*sigma*10/1000000);
         postMessage({value: stok});
     }
     
