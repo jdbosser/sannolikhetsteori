@@ -1,0 +1,89 @@
+<!DOCTYPE htlm>
+<html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+    
+    <body>
+        <h1>
+            Framställning av normalfördelade slumptal genom Box-Muller-metoden. 
+        </h1>
+        Standardavvikelse: <input type="number" id="deviation_input" value="1"><br>
+        Väntevärde: <input type="number" id="my_input" value="0"><br>
+        <input type="button" value="start()" id="start_btn"><input type="button" value="stop()" id="stop_btn"><br>
+        <canvas id="canvas"></canvas>
+        <script type="application/javascript" src="showcase.js"></script>
+        <script type="application/javascript">
+            
+            var startBtn = document.getElementById("start_btn"),
+                stopBtn = document.getElementById("stop_btn"),
+                myField = document.getElementById("my_input"),
+                sigmaField = document.getElementById("deviation_input"),
+                worker = null,
+                canvas = document.getElementById("canvas"),
+                values = [];
+            
+            // First of all, make sure canvas is the right height
+            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+            
+            
+            // Listen for clicks on start button. On click, start ALL THE THINGS!!
+            startBtn.addEventListener("click", function(e){
+                var my = myField.value;
+                var sigma = sigmaField.value;
+                
+                // Get rid of old worker if it exists. 
+                if(worker) worker.terminate, worker = null;
+                
+                // Create new worker
+                worker = new Worker("box-muller-method.js");
+                
+                worker.addEventListener("message", function(e){
+                    values.push(e.data.value);
+                    
+                    // Create array for graphing
+                    
+                    /*var input = values.slice();
+                    
+                    var showcaser = new ShowCase(
+                        my-10*sigma,              // Lower limit
+                        my+10*sigma,              // Upper limit
+                        my,                       // Expected Value
+                        canvas.getContext("2d")); // Canvas context
+                    */
+                    if(values.length % 100000 == 0){
+                        stopBtn.click();
+                        
+                        var input = values.slice();
+                    
+                        var showcaser = new ShowCase(
+                        my-10*sigma,              // Lower limit
+                        my+10*sigma,              // Upper limit
+                        my,                       // Expected Value
+                        canvas.getContext("2d")); // Canvas context
+                        showcaser.graphWithPixelWidth(input);
+                        //values = [];
+                        
+                       
+                        
+                        // Restart the worker after we have drawn the things
+                        
+                        console.log("Ritade: " + values.length);
+                        startBtn.click();
+                    }
+                });
+                
+                
+                worker.postMessage({type:1, my: my, sigma:sigma});
+            });
+            
+            stopBtn.addEventListener("click", function(e){
+                if(worker)worker.terminate(); 
+                worker = null;
+                console.log("stopped");
+            });
+            
+        </script>
+    </body>
+</html>
